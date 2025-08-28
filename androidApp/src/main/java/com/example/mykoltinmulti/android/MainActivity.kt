@@ -1,108 +1,125 @@
 package com.example.mykoltinmulti.android
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.mykoltinmulti.Todo
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            TodoScreen()
-        }
-    }
-}
-
-@Composable
-fun TodoScreen(
-    viewModel: TodoViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
-) {
-    var input by remember { mutableStateOf(TextFieldValue("")) }
-    var items by remember { mutableStateOf(viewModel.list()) }
-
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        containerColor = MaterialTheme.colorScheme.background
-    ) { paddingValues ->
-        Box(modifier = Modifier.padding(all = 16.dp)) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-            ) {
-                Text(text = "KMP To-Do", style = MaterialTheme.typography.titleMedium)
-                Spacer(modifier = Modifier.height(8.dp))
-                Row {
-                    OutlinedTextField(
-                        value = input,
-                        onValueChange = { input = it },
-                        label = { Text("New task") },
-                        modifier = Modifier.weight(1f)
-                    )
-                    Spacer(Modifier.width(8.dp))
-                    Button(onClick = {
-                        val text = input.text
-                        if (text.isNotBlank()) {
-                            viewModel.add(text)
-                            items = viewModel.list()
-                            input = TextFieldValue("")
-                        }
-                    }) {
-                        Text("Add")
-                    }
-                }
-                Spacer(modifier = Modifier.height(16.dp))
-                LazyColumn(modifier = Modifier.fillMaxSize()) {
-                    items(items, key = { it.id }) { todo ->
-                        TodoRow(
-                            todo = todo,
-                            onToggle = {
-                                viewModel.toggle(todo.id)
-                                items = viewModel.list()
-                            },
-                            onDelete = {
-                                viewModel.remove(todo.id)
-                                items = viewModel.list()
-                            }
-                        )
-                        Divider()
-                    }
-                }
+            MyApplicationTheme {
+                AppRoot()
             }
         }
     }
 }
 
 @Composable
-fun TodoRow(todo: Todo, onToggle: () -> Unit, onDelete: () -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp), horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Row(modifier = Modifier.weight(1f)) {
-            Checkbox(checked = todo.done, onCheckedChange = { onToggle() })
-            Spacer(Modifier.width(8.dp))
-            Text(text = if (todo.done) "✔ ${todo.text}" else todo.text)
+fun LoginScreen(
+    viewModel: LoginViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
+    onLoginSuccess: () -> Unit
+) {
+    val context = LocalContext.current
+    var email by remember { mutableStateOf(TextFieldValue("")) }
+    var password by remember { mutableStateOf(TextFieldValue("")) }
+
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        containerColor = MaterialTheme.colorScheme.background
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(16.dp),
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(text = "Login", style = MaterialTheme.typography.titleLarge)
+            Spacer(modifier = Modifier.height(16.dp))
+            OutlinedTextField(
+                value = email,
+                onValueChange = { email = it },
+                label = { Text("Email") },
+                modifier = Modifier.fillMaxWidth(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            OutlinedTextField(
+                value = password,
+                onValueChange = { password = it },
+                label = { Text("Senha") },
+                modifier = Modifier.fillMaxWidth(),
+                visualTransformation = PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+            )
+            Spacer(modifier = Modifier.height(20.dp))
+            Button(
+                onClick = {
+                    when (val res = viewModel.login(email.text, password.text)) {
+                        is com.example.mykoltinmulti.auth.LoginResult.Success -> {
+                            Toast.makeText(context, "Login Efetuado", Toast.LENGTH_SHORT).show()
+                            onLoginSuccess()
+                        }
+                        is com.example.mykoltinmulti.auth.LoginResult.Failure -> {
+                            Toast.makeText(context, res.error.message ?: "Erro", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Fazer login")
+            }
         }
-        TextButton(onClick = onDelete) { Text("Delete") }
     }
 }
 
 @Preview
 @Composable
-fun DefaultPreview() {
+fun LoginPreview() {
     MyApplicationTheme {
-        TodoScreen()
+        LoginScreen(onLoginSuccess = {})
+    }
+}
+
+@Composable
+fun AppRoot() {
+    var isLoggedIn by remember { mutableStateOf(false) }
+    if (isLoggedIn) {
+        HomeScreen()
+    } else {
+        LoginScreen(onLoginSuccess = { isLoggedIn = true })
+    }
+}
+
+
+@Composable
+fun HomeScreen() {
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        containerColor = MaterialTheme.colorScheme.background
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
+            verticalArrangement = Arrangement.Center
+        ) {
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+                Text(text = "Hello World", style = MaterialTheme.typography.titleLarge)
+            }
+        }
     }
 }

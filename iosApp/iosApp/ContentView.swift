@@ -1,72 +1,73 @@
 import SwiftUI
 import shared
 
-class TodoVM: ObservableObject {
-    private let repo = TodoRepository()
-    @Published var items: [Todo] = []
+class LoginVM: ObservableObject {
+    private let repo: LoginRepository = LoginRepository()
+    @Published var showSuccess: Bool = false
+    @Published var errorMessage: String? = nil
 
-    init() {
-        refresh()
-    }
-
-    func refresh() {
-        items = Array(repo.listArray())
-    }
-
-    func add(_ text: String) {
-        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty else { return }
-        _ = repo.add(text: trimmed)
-        refresh()
-    }
-
-    func toggle(_ id: Int64) {
-        _ = repo.toggle(id: id)
-        refresh()
-    }
-
-    func remove(_ id: Int64) {
-        _ = repo.remove(id: id)
-        refresh()
-    }
-
-    func clear() {
-        repo.clear()
-        refresh()
+    func login(email: String, password: String) {
+        let result = repo.login(email: email, password: password)
+        if result is AuthLoginResultSuccess {
+            showSuccess = true
+            errorMessage = nil
+        } else if let failure = result as? AuthLoginResultFailure {
+            showSuccess = false
+            errorMessage = failure.error.message
+        }
     }
 }
 
 struct ContentView: View {
-    @StateObject private var vm = TodoVM()
-    @State private var input: String = ""
+    @StateObject private var vm = LoginVM()
+    @State private var email: String = ""
+    @State private var password: String = ""
+    @State private var isLoggedIn: Bool = false
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("KMP To-Do (shared logic)")
-                .font(.headline)
-            HStack {
-                TextField("New task", text: $input)
-                    .textFieldStyle(.roundedBorder)
-                Button("Add") {
-                    vm.add(input)
-                    input = ""
-                }
-            }
-            List {
-                ForEach(vm.items, id: \.id) { todo in
-                    HStack {
-                        Button(action: { vm.toggle(todo.id) }) {
-                            Image(systemName: todo.done ? "checkmark.square" : "square")
-                        }
-                        Text(todo.text)
-                            .strikethrough(todo.done)
-                        Spacer()
-                        Button("Delete") { vm.remove(todo.id) }
-                            .foregroundColor(.red)
+        Group {
+            if isLoggedIn {
+                HomeView()
+            } else {
+                VStack(alignment: .leading, spacing: 16) {
+                    Text("Login")
+                        .font(.largeTitle)
+                    TextField("Email", text: $email)
+                        .textFieldStyle(.roundedBorder)
+                        .keyboardType(.emailAddress)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled()
+                    SecureField("Senha", text: $password)
+                        .textFieldStyle(.roundedBorder)
+                    Button("Fazer login") {
+                        vm.login(email: email, password: password)
                     }
+                    .buttonStyle(.borderedProminent)
+                    if let error = vm.errorMessage { Text(error).foregroundColor(.red) }
+                    Spacer()
                 }
+                .padding()
             }
-            Button("Clear All") { vm.clear() }
+        }
+        .onChange(of: vm.showSuccess) { newValue in
+            if newValue { isLoggedIn = true }
+        }
+        .alert("Login Efetuado", isPresented: $vm.showSuccess) {
+            Button("OK", role: .cancel) { }
+        }
+    }
+}
+
+struct HomeView: View {
+    var body: some View {
+        VStack {
+            Spacer()
+            HStack {
+                Spacer()
+                Text("Hello World")
+                    .font(.largeTitle)
+                Spacer()
+            }
             Spacer()
         }
         .padding()
