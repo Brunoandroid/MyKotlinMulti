@@ -18,6 +18,28 @@ class LoginVM: ObservableObject {
     }
 }
 
+class HomeViewModel: ObservableObject {
+    private let quoteRepository = QuoteRepository()
+
+    @Published var quote: QuoteResponse?
+    @Published var error: String?
+
+    init() {
+        fetchQuote()
+    }
+
+    func fetchQuote() {
+        Task {
+            do {
+                let result = try await quoteRepository.getQuote()
+                self.quote = result
+            } catch {
+                self.error = error.localizedDescription
+            }
+        }
+    }
+}
+
 struct ContentView: View {
     @StateObject private var vm = LoginVM()
     @State private var email: String = ""
@@ -59,19 +81,28 @@ struct ContentView: View {
 }
 
 struct HomeView: View {
-    var body: some View {
-        VStack {
-            Spacer()
-            HStack {
-                Spacer()
-                Text("Hello World")
-                    .font(.largeTitle)
-                Spacer()
+    @StateObject private var viewModel = HomeViewModel()
+
+        var body: some View {
+            VStack {
+                if let quote = viewModel.quote {
+                    Text(quote.quoteText)
+                        .font(.title)
+                        .padding()
+                    Text("- \(quote.quoteAuthor)")
+                        .font(.subheadline)
+                        .padding()
+                } else if let error = viewModel.error {
+                    Text("Erro: \(error)")
+                        .foregroundColor(.red)
+                } else {
+                    Button("Buscar uma citação") {
+                        viewModel.fetchQuote()
+                    }
+                }
             }
-            Spacer()
         }
-        .padding()
-    }
+
 }
 
 struct ContentView_Previews: PreviewProvider {

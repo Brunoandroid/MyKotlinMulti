@@ -10,11 +10,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -106,20 +108,38 @@ fun AppRoot() {
 
 
 @Composable
-fun HomeScreen() {
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        containerColor = MaterialTheme.colorScheme.background
-    ) { paddingValues ->
+fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
+    val quote by viewModel.quote.collectAsState()
+    val error by viewModel.error.collectAsState()
+
+    Scaffold(modifier = Modifier.fillMaxSize()) { padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues),
-            verticalArrangement = Arrangement.Center
+                .padding(padding)
+                .padding(16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-                Text(text = "Hello World", style = MaterialTheme.typography.titleLarge)
+            if (quote != null) {
+                Text(
+                    text = quote!!.quoteText,
+                    style = MaterialTheme.typography.headlineMedium,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+                Text(
+                    text = "- ${quote!!.quoteAuthor}",
+                    style = MaterialTheme.typography.bodyLarge
+                )
+            } else if (error != null) {
+                Text(
+                    text = "Erro: $error",
+                    color = MaterialTheme.colorScheme.error
+                )
+            } else {
+                CircularProgressIndicator()
             }
         }
     }
 }
+
