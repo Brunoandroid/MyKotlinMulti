@@ -1,4 +1,8 @@
-package com.example.mykoltinmulti.auth
+package com.example.mykoltinmulti.repository
+
+import com.example.mykoltinmulti.auth.AuthValidator
+import com.example.mykoltinmulti.auth.LoginError
+import com.example.mykoltinmulti.auth.LoginResult
 
 interface ILoginRepository {
     fun login(email: String, password: String): LoginResult

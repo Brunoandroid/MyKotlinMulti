@@ -1,8 +1,8 @@
-package com.example.mykoltinmulti.android
+package com.example.mykoltinmulti.android.screens.login
 
 import androidx.lifecycle.ViewModel
-import com.example.mykoltinmulti.auth.LoginRepository
 import com.example.mykoltinmulti.auth.LoginResult
+import com.example.mykoltinmulti.repository.LoginRepository
 
 class LoginViewModel(
     private val repo: LoginRepository = LoginRepository()

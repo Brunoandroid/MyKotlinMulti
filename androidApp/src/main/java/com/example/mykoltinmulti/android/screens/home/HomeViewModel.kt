@@ -1,4 +1,4 @@
-package com.example.mykoltinmulti.android
+package com.example.mykoltinmulti.android.screens.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -33,4 +33,3 @@ class HomeViewModel(
         }
     }
 }
-
