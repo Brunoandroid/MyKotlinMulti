@@ -18,14 +18,14 @@ fun Theme(
 ) {
     val colors = if (darkTheme) {
         darkColorScheme(
-            primary = Color(0xFFBB86FC),
-            secondary = Color(0xFF03DAC5),
+            primary = Color(0xFF2C2C2C),
+            secondary = Color(0xFFF5F3EF),
             tertiary = Color(0xFF3700B3)
         )
     } else {
         lightColorScheme(
-            primary = Color(0xFF6200EE),
-            secondary = Color(0xFF03DAC5),
+            primary = Color(0xFF2C2C2C),
+            secondary = Color(0xFFF5F3EF),
             tertiary = Color(0xFF3700B3)
         )
     }
