@@ -21,8 +21,8 @@ fun LoginScreen(
     onLoginSuccess: () -> Unit
 ) {
     val context = LocalContext.current
-    var email by remember { mutableStateOf(TextFieldValue("")) }
-    var password by remember { mutableStateOf(TextFieldValue("")) }
+    var email by remember { mutableStateOf(TextFieldValue("email@teste.com")) }
+    var password by remember { mutableStateOf(TextFieldValue("123456")) }
     var passwordVisible by remember { mutableStateOf(false) }
 
     Scaffold(
