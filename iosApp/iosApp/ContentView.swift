@@ -127,6 +127,19 @@ struct HomeView: View {
                 Text("- \(quote.quoteAuthor)")
                     .font(.system(size: 16))
                     .foregroundColor(Color(hex: 0x2C2C2C))
+                Spacer().frame(height: 16)
+                Button(action: { viewModel.fetchQuote() }) {
+                    Image(systemName: "arrow.clockwise")
+                        .foregroundColor(Color(hex: 0x2C2C2C))
+                        .frame(width: 56, height: 56)
+                        .background(Color.clear)
+                        .clipShape(Circle())
+                        .overlay(
+                            Circle()
+                                .stroke(Color(hex: 0x2C2C2C), lineWidth: 2)
+                        )
+                }
+                .buttonStyle(PlainButtonStyle())
             } else if let error = viewModel.error {
                 Text("Erro: \(error)")
                     .foregroundColor(.red)
