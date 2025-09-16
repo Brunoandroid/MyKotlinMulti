@@ -5,6 +5,8 @@ MyKoltinMulti é um projeto Kotlin Multiplatform Mobile (KMM) que compartilha re
 - iOS: SwiftUI
 - Módulo compartilhado: lógica de autenticação, validação e repositórios (chamadas de rede e regras)
 
+<img src="https://github.com/Brunoandroid/Imagens/blob/main/mykotlinmulti.gif" width="350" height="600"/>
+
 ### Principais funcionalidades
 - Login com validação de email e senha compartilhada entre plataformas
 - Tratamento de erros de autenticação padronizado via `LoginResult`
@@ -88,3 +90,4 @@ Observação: Em KMM, o módulo `shared` é construído como framework para iOS;
 - Faça um fork do repositório
 - Crie um branch a partir de `master`: `git checkout -b feat/nome-da-feature`
 - Abra um Pull Request com descrição clara, screenshots (se aplicável) e itens de verificação
+
